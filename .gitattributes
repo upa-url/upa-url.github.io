@@ -10,6 +10,7 @@
 *.css   text eol=lf
 *.html  text eol=lf
 *.js    text eol=lf
+*.dat   text eol=lf
 *.md    text
 *.txt   text
 
