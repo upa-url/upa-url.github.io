@@ -29,15 +29,26 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Download Public Suffix List
+        run: |
+          urls=(
+            "https://upa-url.github.io/demo/public_suffix_list.dat"
+            "https://publicsuffix.org/list/public_suffix_list.dat"
+          )
+          for u in "${urls[@]}"; do
+            if curl -fsS -o public/demo/public_suffix_list.dat "$u"; then
+              break
+            fi
+          done
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: ./public
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
