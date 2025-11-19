@@ -6,7 +6,9 @@ on:
   push:
     branches: ["main"]
 
-  # Allows you to run this workflow manually from the Actions tab
+  # Renew the Public Suffix List on schedule or manually
+  schedule:
+    - cron: '12 3 * * *'
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -33,10 +35,16 @@ jobs:
 
       - name: Download Public Suffix List
         run: |
-          urls=(
-            "https://upa-url.github.io/demo/public_suffix_list.dat"
-            "https://publicsuffix.org/list/public_suffix_list.dat"
-          )
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # First, try using the same file
+            urls=(
+              "https://upa-url.github.io/demo/public_suffix_list.dat"
+              "https://publicsuffix.org/list/public_suffix_list.dat"
+            )
+          else
+            # Renew file from source
+            urls=("https://publicsuffix.org/list/public_suffix_list.dat")
+          fi
           for u in "${urls[@]}"; do
             if curl -fsS -o public/demo/public_suffix_list.dat "$u"; then
               break
